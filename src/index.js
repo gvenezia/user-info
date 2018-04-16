@@ -12,65 +12,93 @@ class UserInfo extends React.Component {
         
         this.state = {
             name: 'Gae',
-            friendsList: ['J T', 'X A', 'C T']
+            friendsList: ['J T', 'X A', 'C T'],
         }
         
-        this.handleClick = this.handleClick.bind(this);
+        this.addFriend = this.addFriend.bind(this);
     }
     
-    handleClick(e){
-        this.setState({
-            friendsList: this.state.friendsList.push(e.target.value),
-        });
+    addFriend(friend){
+        this.setState( (state) => ({
+            friendsList: state.friendsList.concat([friend])
+        }));
     }
     
     render() {
         return(
             <div>
-                <Greeting name={this.state.name}/>
+                <Greeting name={this.state.name} />
                 <br/>
-                <FriendsContainer 
-                    name={this.state.name}
-                    friendsList={this.state.friendsList}
-                />
+                <AddFriend addFriend={this.addFriend} />
+                <ShowFriends friendsList={this.state.friendsList} />
             </div>
         );
   
     };
 } // End UserInfo
 
-class FriendsContainer extends React.Component {
+class AddFriend extends React.Component {
+    constructor(props){
+        super(props)
+        
+        this.state = {
+            newFriend: ''
+        }
+        
+        this.updateNewFriend = this.updateNewFriend.bind(this);
+        this.handleAddFriend = this.handleAddFriend.bind(this);
+        
+    }
+    
+    updateNewFriend(e){
+        // Update the newFriend value at every keystroke
+        this.setState({
+            newFriend: e.target.value
+        })
+    }
+    
+    handleAddFriend(){
+        // pass the newFriend input to the method on UserInfo 
+        this.props.addFriend(this.state.newFriend);
+        
+        // Clear the input for the next newFriend
+        this.setState({
+            newFriend: '',
+        });
+    }
+    
     render() {
         return (
             <div>Add a friend name:
                 <input
                     type='text'
+                    value={this.state.newFriend}
+                    onChange={this.updateNewFriend}
                 />
-                <button 
-                    type='submit'
-                    onClick={this.props.handleClick}
-                > Add Friend!
-                </button>
+                <button onClick={this.handleAddFriend}> Add Friend!</button>
                 <br/>
-                <h3>Friends</h3>
-                <ul>
-                    {this.props.friendsList.map((currName) => {<li>{currName}</li>})}
-                </ul>
                 
             </div>
         );
     }
 } // End FriendsContainer
 
-function Greeting(props){
-    return <div>Hello, {props.name}!</div> ;
+class ShowFriends extends React.Component{
+    render() {
+        return (
+            <div>
+                <h3>Friends</h3>
+                <ul>
+                    {this.props.friendsList.map((currName) => {return <li>{currName}</li>} )}
+                </ul>
+            </div>
+        )
+    }
 }
 
-function Friend(props) {
-    return(
-        <li></li>
-    );
-};
+function Greeting(props){
+    return <h2>Hello, {props.name}!</h2> ;
+}
 
 // =============== React DOM Render =========================
 
